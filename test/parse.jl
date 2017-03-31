@@ -1061,3 +1061,9 @@ end
 @test isa(f21054, Function)
 g21054(>:) = >:2
 @test g21054(-) == -2
+
+# Issue #21225
+@test parse("abstract type X; end") == parse("abstract type X end")
+@test parse("abstract type X\nend") == parse("abstract type X end")
+@test parse("primitive type X 8; end") == parse("primitive type X 8 end")
+@test parse("primitive type X 8\nend") == parse("primitive type X 8 end")

@@ -1271,7 +1271,11 @@
                 (syntax-deprecation s (string "abstract " (deparse spec))
                                     (string "abstract type " (deparse spec) " end")))
             (begin0 (list 'abstract spec)
-                    (if ty (expect-end s "abstract type"))))))
+                    (if ty (begin
+                      (let ((nt (peek-token s)))
+                        (if (or (newline? nt) (eqv? nt #\;))
+                          (take-token s)))
+                      (expect-end s "abstract type")))))))
        ((struct)
         (begin (take-token s)
                (parse-struct-def s #f word)))
@@ -1287,7 +1291,10 @@
                    (let* ((spec (with-space-sensitive (parse-subtype-spec s)))
                           (nb   (with-space-sensitive (parse-cond s))))
                      (begin0 (list 'bitstype nb spec)
-                             (expect-end s "primitive type"))))))
+                             (let ((nt (peek-token s)))
+                               (if (or (newline? nt) (eqv? nt #\;))
+                                   (take-token s)))
+                              (expect-end s "primitive type"))))))
        ;; deprecated type keywords
        ((type)
         ;; TODO fully deprecate post-0.6
